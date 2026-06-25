@@ -82,4 +82,3 @@ requirements.txt    # Dependencies
 |----------|----------|---------|
 | `FAL_API_KEY` | Yes | — |
 | `FAL_API_URL` | No | `https://api.fal.ai` |
-# Fal.ai.mcp

@@ -17,4 +17,4 @@ build/
 
 # Tooling
 .ralph/
-.claude/settings.local.json
+.claude/
