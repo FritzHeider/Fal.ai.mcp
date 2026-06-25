@@ -1,0 +1,18 @@
+{
+  "episode_number": 2,
+  "title": "The Red Button Catastrophe",
+  "script": "Episode two! Pip is floating in zero-G panic while footsteps echo down the arcade hall! Desperate to disable gravity, Pip spots the giant flashing RED BUTTON on the ceiling! With one heroic leap, he slams his paws right onto the switch! Uh oh... that wasn't the gravity reset. THAT WAS MEGA DISCO LASER MODE! Can Pip escape the laser dance floor?! Vote in the comments for his next move!",
+  "video_prompt": "3D Pixar animated cartoon shot, cute chubby character named Pip in bright yellow bunny hoodie floating upside down in zero gravity, desperately slamming a glowing red arcade emergency button, instant neon laser disco lights explosion, chaotic funny cartoon expression, 8k render, octane render",
+  "files": {
+    "master_16x9": "/Users/drop/fal.ai.mcp/episodes/episode_02_the_red_button_catastrophe/final_master_16x9.mp4",
+    "shorts_9x16": "/Users/drop/fal.ai.mcp/episodes/episode_02_the_red_button_catastrophe/final_shorts_9x16.mp4",
+    "thumbnail": "/Users/drop/fal.ai.mcp/episodes/episode_02_the_red_button_catastrophe/thumbnail_4k.jpg",
+    "voiceover_wav": "/Users/drop/fal.ai.mcp/episodes/episode_02_the_red_button_catastrophe/voiceover.wav",
+    "raw_video": "/Users/drop/fal.ai.mcp/episodes/episode_02_the_red_button_catastrophe/raw_render.mp4"
+  },
+  "cloud_urls": {
+    "audio": "https://v3b.fal.media/files/b/0aa9350b/-HdYZcIJ1zwlHWvSdjUlL_9cAfv71u.wav",
+    "video": "https://v3b.fal.media/files/b/0aa93528/REre9wldgm_KEW1WNgFh__output.mp4",
+    "thumbnail": "https://v3b.fal.media/files/b/0aa93508/QYxcLTOIGc3q2TQjiaSW0.jpg"
+  }
+}

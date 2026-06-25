@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>fal.ai Video Pipeline Command Center</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/app.css">
+</head>
+<body>
+  <div class="app-background">
+    <div class="glow-orb orb-1"></div>
+    <div class="glow-orb orb-2"></div>
+    <div class="glow-orb orb-3"></div>
+  </div>
+
+  <div class="app-container">
+    <!-- Navigation Header -->
+    <header class="navbar glass-panel">
+      <div class="nav-brand">
+        <div class="brand-logo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="23 7 16 12 23 17 23 7"></polygon>
+            <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
+          </svg>
+        </div>
+        <div>
+          <h1 class="brand-title">fal.ai Video Pipeline</h1>
+          <span class="brand-subtitle">AI Media Production & MCP Command Center</span>
+        </div>
+      </div>
+
+      <div class="nav-actions">
+        <button class="btn btn-secondary btn-sm" id="btn-open-wizard">
+          <span class="btn-icon">⚡</span> Interactive Wizard
+        </button>
+        <button class="btn btn-ghost btn-icon-only" id="btn-theme-toggle" title="Toggle Theme">
+          <span id="theme-icon">🌙</span>
+        </button>
+        <div class="status-indicator-badge" id="api-status-badge">
+          <span class="dot pulse"></span>
+          <span id="api-status-text">Connected</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content Area with Tabs -->
+    <main class="main-content">
+      <!-- Tabs Navigation -->
+      <div class="tabs-nav glass-panel">
+        <button class="tab-btn active" data-tab="tab-studio">
+          <span class="tab-icon">🎬</span> Production Studio
+        </button>
+        <button class="tab-btn" data-tab="tab-jobs">
+          <span class="tab-icon">📊</span> Job History & Queue
+          <span class="badge" id="jobs-count-badge">0</span>
+        </button>
+        <button class="tab-btn" data-tab="tab-diagnostics">
+          <span class="tab-icon">🛠️</span> Diagnostics & Models
+        </button>
+      </div>
+
+      <!-- TAB 1: PRODUCTION STUDIO -->
+      <section class="tab-pane active" id="tab-studio">
+        <div class="studio-grid">
+          <!-- Main Form Column -->
+          <div class="glass-card form-container">
+            <div class="card-header">
+              <h2 class="card-title">Configure Video Production</h2>
+              <p class="card-description">Synthesize narrative scripts, visual cue timelines, and dispatch fal.ai video generations.</p>
+            </div>
+
+            <form id="video-production-form">
+              <!-- Section 1: Basic Specs -->
+              <div class="form-section">
+                <h3 class="section-heading">1. Basic Specifications</h3>
+                
+                <div class="form-group">
+                  <label for="input-title">Project / Series Title <span class="required">*</span></label>
+                  <input type="text" id="input-title" class="input-text" placeholder="e.g. Chronicles of Neo-Kyoto: Ep 1" maxlength="150" required>
+                  <div class="input-meta">
+                    <span class="char-count" id="count-title">0 / 150</span>
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group flex-1">
+                    <label for="select-niche">Niche / Genre</label>
+                    <select id="select-niche" class="input-select">
+                      <option value="Sci-Fi Lore">Sci-Fi & Cyberpunk Lore</option>
+                      <option value="Tech Breakdown">Tech & Future Innovations</option>
+                      <option value="True Crime & Mystery">True Crime & Mystery</option>
+                      <option value="Dark Fantasy">Dark Fantasy & Mythos</option>
+                      <option value="History Uncovered">History Uncovered</option>
+                      <option value="Mindset & Wealth">Mindset & Wealth Philosophy</option>
+                      <option value="Cosmic Horror">Cosmic Horror & Deep Space</option>
+                    </select>
+                  </div>
+
+                  <div class="form-group flex-1">
+                    <label for="input-keyword">Focus Keyword / Theme</label>
+                    <input type="text" id="input-keyword" class="input-text" placeholder="e.g. Quantum Singularity">
+                  </div>
+                </div>
+
+                <!-- Dynamic Suggestions for Niche -->
+                <div class="dynamic-suggestions-box">
+                  <span class="suggestions-label">💡 Suggested Topics for Niche:</span>
+                  <div class="suggestion-chips" id="niche-suggestions-container">
+                    <!-- Injected dynamically -->
+                  </div>
+                </div>
+              </div>
+
+              <!-- Section 2: Audience & Aesthetics -->
+              <div class="form-section">
+                <h3 class="section-heading">2. Demographics & Aesthetics</h3>
+                
+                <div class="form-group">
+                  <label>Target Audience Presets</label>
+                  <div class="preset-chips" id="demographic-presets">
+                    <button type="button" class="chip active" data-val="General Audience">General</button>
+                    <button type="button" class="chip" data-val="Gen Z & TikTok Creators">Gen Z</button>
+                    <button type="button" class="chip" data-val="Tech Enthusiasts & Developers">Tech Enthusiasts</button>
+                    <button type="button" class="chip" data-val="Dark Lore & Horror Fans">Dark Lore</button>
+                    <button type="button" class="chip" data-val="Finance & Hustle Bros">Finance</button>
+                    <button type="button" class="chip" data-val="Kids & Family">Family Friendly</button>
+                  </div>
+                  <input type="hidden" id="input-demographic" value="General Audience">
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group flex-1">
+                    <label for="select-style">Visual Art Style</label>
+                    <select id="select-style" class="input-select">
+                      <option value="Cinematic Photorealism">Cinematic Photorealism (35mm Film)</option>
+                      <option value="Anime / Cyberpunk">Anime / Cyberpunk (Neon Glow)</option>
+                      <option value="Retro 80s VHS">Retro 80s VHS Synthwave</option>
+                      <option value="3D Pixar / Unreal 5">3D Unreal 5 Stylized Render</option>
+                      <option value="Dark Noir">Dark Noir Atmospheric Chiaroscuro</option>
+                      <option value="Documentary Realism">National Geographic Documentary</option>
+                    </select>
+                  </div>
+
+                  <div class="form-group flex-1">
+                    <label for="select-voice-tone">Narrator Voice Tone</label>
+                    <select id="select-voice-tone" class="input-select">
+                      <option value="Cinematic Narrator">Cinematic & Authoritative</option>
+                      <option value="Spooky Storyteller">Spooky & Suspenseful</option>
+                      <option value="High Energy Enthusiast">High Energy & Engaging</option>
+                      <option value="Thoughtful Analyst">Thoughtful & Educational</option>
+                      <option value="Whispering Noir">Intimate Whispering Noir</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Section 3: Duration & Word Count Calculator -->
+              <div class="form-section">
+                <h3 class="section-heading">3. Pacing & Duration</h3>
+                
+                <div class="duration-slider-container">
+                  <div class="duration-header">
+                    <span>Target Duration: <strong id="duration-val-display">60s</strong></span>
+                    <span class="word-counter-badge">Est. Script: <strong id="word-count-calc">~150 words</strong></span>
+                  </div>
+                  <input type="range" id="range-duration" class="input-range" min="15" max="300" step="5" value="60">
+                  <div class="range-labels">
+                    <span>15s (Shorts/Reels)</span>
+                    <span>60s (Standard)</span>
+                    <span>180s (Deep Dive)</span>
+                    <span>300s (Featurette)</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Section 4: Narrative Script & Template Helpers -->
+              <div class="form-section">
+                <h3 class="section-heading">4. Script & Narrative Hooks</h3>
+
+                <div class="form-group">
+                  <div class="label-with-actions">
+                    <label for="input-recap">Recap Intro Hook (Optional)</label>
+                  </div>
+                  <div class="template-helper-chips" id="recap-template-chips">
+                    <button type="button" class="helper-chip" data-target="input-recap" data-text="Previously on {title}... the boundary between memory and reality shattered.">"Previously on..."</button>
+                    <button type="button" class="helper-chip" data-target="input-recap" data-text="In our last investigation into {keyword}, we unearthed a secret kept hidden for decades.">"In our last investigation..."</button>
+                    <button type="button" class="helper-chip" data-target="input-recap" data-text="Forget everything you thought you knew about {keyword}.">"Forget everything..."</button>
+                  </div>
+                  <input type="text" id="input-recap" class="input-text" placeholder="e.g. Previously on Neo-Kyoto...">
+                </div>
+
+                <div class="form-group">
+                  <label for="input-script">Custom Script Content (Leave empty to auto-synthesize)</label>
+                  <textarea id="input-script" class="input-textarea" rows="4" placeholder="Enter custom script or let the pipeline automatically compose full visual narration..."></textarea>
+                  <div class="input-meta">
+                    <span class="char-count" id="count-script">0 chars</span>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <div class="label-with-actions">
+                    <label for="input-cliffhanger">Custom Cliffhanger Ending Hook (Optional)</label>
+                  </div>
+                  <div class="template-helper-chips" id="cliffhanger-template-chips">
+                    <button type="button" class="helper-chip" data-target="input-cliffhanger" data-text="Will they survive the impending collision? Find out in the next episode.">"Will they survive..."</button>
+                    <button type="button" class="helper-chip" data-target="input-cliffhanger" data-text="And that was only the beginning of {keyword}'s true awakening.">"Only the beginning..."</button>
+                    <button type="button" class="helper-chip" data-target="input-cliffhanger" data-text="Subscribe and comment your theory below before episode 2 drops.">"Subscribe & comment..."</button>
+                  </div>
+                  <input type="text" id="input-cliffhanger" class="input-text" placeholder="e.g. Will they survive the impending collision?">
+                </div>
+              </div>
+
+              <!-- Section 5: Model Selection & Submit -->
+              <div class="form-section">
+                <h3 class="section-heading">5. Model Dispatch</h3>
+                
+                <div class="form-group">
+                  <label for="select-model">fal.ai Generation Model</label>
+                  <select id="select-model" class="input-select">
+                    <option value="fal-ai/kling-video/v1/standard/text-to-video">Kling Video Standard (High Coherence)</option>
+                    <option value="fal-ai/minimax/video-01">Minimax Video-01 (Cinematic Pacing)</option>
+                    <option value="fal-ai/luma-dream-machine">Luma Dream Machine (Realistic Camera Moves)</option>
+                    <option value="fal-ai/cogvideox-5b">CogVideoX 5B (Creative Surrealism)</option>
+                    <option value="fal-ai/flux/schnell">Flux Schnell (Fast Ultra-HD Visuals)</option>
+                  </select>
+                </div>
+
+                <div class="form-actions">
+                  <button type="submit" class="btn btn-primary btn-lg" id="btn-submit-job">
+                    <span class="btn-icon">🚀</span> Launch Video Production
+                  </button>
+                  <button type="reset" class="btn btn-ghost">Reset Specs</button>
+                </div>
+              </div>
+            </form>
+          </div>
+
+          <!-- Studio Live Preview & Summary Card -->
+          <div class="glass-card preview-sidebar">
+            <div class="card-header">
+              <h3 class="card-title">Live Production Summary</h3>
+            </div>
+            
+            <div class="summary-specs">
+              <div class="spec-row">
+                <span class="spec-label">Series:</span>
+                <span class="spec-value" id="summary-title">Untitled Production</span>
+              </div>
+              <div class="spec-row">
+                <span class="spec-label">Niche:</span>
+                <span class="spec-value" id="summary-niche">Sci-Fi Lore</span>
+              </div>
+              <div class="spec-row">
+                <span class="spec-label">Style:</span>
+                <span class="spec-value" id="summary-style">Cinematic Photorealism</span>
+              </div>
+              <div class="spec-row">
+                <span class="spec-label">Target Audience:</span>
+                <span class="spec-value" id="summary-demographic">General Audience</span>
+              </div>
+              <div class="spec-row">
+                <span class="spec-label">Voice Tone:</span>
+                <span class="spec-value" id="summary-voice">Cinematic Narrator</span>
+              </div>
+              <div class="spec-row">
+                <span class="spec-label">Duration / Shots:</span>
+                <span class="spec-value" id="summary-duration">60s (~6 Shots)</span>
+              </div>
+            </div>
+
+            <div class="pipeline-feature-badges">
+              <div class="feature-badge">⚡ Auto-Retry (Exponential Backoff)</div>
+              <div class="feature-badge">🛡️ High-Quality Fallback Engine</div>
+              <div class="feature-badge">🧹 Glitch Text JSON Sanitizer</div>
+              <div class="feature-badge">📐 Dynamic Timeline Visualizer</div>
+            </div>
+
+            <div class="quick-action-box">
+              <p class="quick-desc">Want an interactive guided setup instead?</p>
+              <button class="btn btn-secondary btn-block" id="btn-sidebar-wizard">
+                Launch 5-Step Wizard ✨
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 2: JOB HISTORY & QUEUE -->
+      <section class="tab-pane" id="tab-jobs">
+        <div class="glass-card">
+          <div class="card-header table-header-row">
+            <div>
+              <h2 class="card-title">Video Generation Registry</h2>
+              <p class="card-description">Browse active pipelines, review outputs, inspect visual cue timelines, and download metadata packages.</p>
+            </div>
+            
+            <div class="table-controls">
+              <div class="search-input-wrapper">
+                <input type="text" id="table-search" class="input-search" placeholder="Search by title, keyword, or prompt...">
+              </div>
+              <select id="filter-status" class="input-select input-sm">
+                <option value="">All Statuses</option>
+                <option value="COMPLETED">Completed</option>
+                <option value="IN_PROGRESS">In Progress</option>
+                <option value="QUEUED">Queued</option>
+                <option value="FAILED">Failed</option>
+              </select>
+              <button class="btn btn-secondary btn-sm" id="btn-refresh-jobs">
+                🔄 Refresh
+              </button>
+            </div>
+          </div>
+
+          <div class="table-responsive">
+            <table class="jobs-table">
+              <thead>
+                <tr>
+                  <th>Job ID / Title</th>
+                  <th>Niche & Theme</th>
+                  <th>Visual Style</th>
+                  <th>Duration</th>
+                  <th>Status</th>
+                  <th>Created</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="jobs-table-body">
+                <!-- Dynamically Populated -->
+              </tbody>
+            </table>
+          </div>
+
+          <div id="jobs-empty-state" class="empty-state hidden">
+            <div class="empty-icon">📼</div>
+            <h3>No Video Jobs Found</h3>
+            <p>Launch your first video production from the Studio tab or using the Wizard.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 3: DIAGNOSTICS & MODELS -->
+      <section class="tab-pane" id="tab-diagnostics">
+        <div class="diagnostics-grid">
+          <div class="glass-card">
+            <div class="card-header">
+              <h3 class="card-title">System Health & API Configuration</h3>
+            </div>
+            <div class="health-checks-list" id="health-checks-list">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+
+          <div class="glass-card">
+            <div class="card-header">
+              <h3 class="card-title">fal.ai Model Registry</h3>
+              <p class="card-description">Standard media generation models integrated into this MCP pipeline.</p>
+            </div>
+            <div class="models-grid" id="models-list-container">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- SLIDE-OUT DETAILS DRAWER (.drawer) -->
+  <aside class="drawer" id="job-details-drawer">
+    <div class="drawer-header">
+      <div>
+        <span class="drawer-badge" id="drawer-job-status">COMPLETED</span>
+        <h2 class="drawer-title" id="drawer-job-title">Job Details</h2>
+        <span class="drawer-job-id" id="drawer-job-id">job_1234567890</span>
+      </div>
+      <button class="btn btn-ghost btn-icon-only" id="btn-close-drawer" title="Close Drawer">✕</button>
+    </div>
+
+    <div class="drawer-content">
+      <!-- Media Player Box -->
+      <div class="media-preview-container glass-panel" id="drawer-media-box">
+        <video id="drawer-video-player" class="video-player" controls preload="metadata">
+          <source id="drawer-video-source" src="" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
+        <div class="playback-controls">
+          <span class="controls-label">Speed:</span>
+          <div class="speed-buttons">
+            <button class="btn-speed" data-speed="0.5">0.5x</button>
+            <button class="btn-speed active" data-speed="1.0">1.0x</button>
+            <button class="btn-speed" data-speed="1.25">1.25x</button>
+            <button class="btn-speed" data-speed="1.5">1.5x</button>
+            <button class="btn-speed" data-speed="2.0">2.0x</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="drawer-actions">
+        <button class="btn btn-primary btn-sm" id="btn-download-json">
+          📥 Download JSON Metadata Package
+        </button>
+        <button class="btn btn-secondary btn-sm" id="btn-retry-drawer-job">
+          🔁 Retry Generation
+        </button>
+      </div>
+
+      <!-- Details Sections -->
+      <div class="drawer-section">
+        <h4 class="drawer-section-title">Full Script Narration</h4>
+        <div class="script-display glass-panel" id="drawer-script">
+          No script narration available.
+        </div>
+      </div>
+
+      <div class="drawer-section">
+        <h4 class="drawer-section-title">Visual Cue Timeline Breakdown</h4>
+        <div class="timeline-container" id="drawer-timeline">
+          <!-- Injected dynamically -->
+        </div>
+      </div>
+
+      <div class="drawer-section">
+        <h4 class="drawer-section-title">Job Specifications & Metadata</h4>
+        <div class="specs-grid" id="drawer-specs-grid">
+          <!-- Injected dynamically -->
+        </div>
+      </div>
+
+      <div class="drawer-section hidden" id="drawer-error-section">
+        <h4 class="drawer-section-title text-error">Execution Error Log</h4>
+        <pre class="error-log-box" id="drawer-error-log"></pre>
+      </div>
+    </div>
+  </aside>
+
+  <!-- STEP-BY-STEP ONBOARDING WIZARD MODAL (#modal-wizard) -->
+  <div class="modal-backdrop" id="modal-wizard">
+    <div class="modal-window glass-card">
+      <div class="modal-header">
+        <div class="wizard-progress-bar">
+          <div class="progress-step active" data-step="1">1. Niche</div>
+          <div class="progress-step" data-step="2">2. Audience</div>
+          <div class="progress-step" data-step="3">3. Aesthetics</div>
+          <div class="progress-step" data-step="4">4. Settings</div>
+          <div class="progress-step" data-step="5">5. Launch</div>
+        </div>
+        <button class="btn btn-ghost btn-icon-only" id="btn-close-wizard">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <!-- Wizard Step 1 -->
+        <div class="wizard-step-pane active" id="wizard-step-1">
+          <h3>Step 1: Choose Niche & Series Title</h3>
+          <p class="step-desc">Select your content pillar and generate an engaging episode concept.</p>
+          
+          <div class="form-group">
+            <label for="wiz-niche">Select Niche Pillar</label>
+            <select id="wiz-niche" class="input-select">
+              <option value="Sci-Fi Lore">Sci-Fi Lore & Future Tech</option>
+              <option value="Tech Breakdown">Tech & AI Breakdowns</option>
+              <option value="True Crime & Mystery">True Crime & Mystery</option>
+              <option value="Dark Fantasy">Dark Fantasy & Mythos</option>
+              <option value="History Uncovered">History Uncovered</option>
+              <option value="Mindset & Wealth">Mindset & Wealth Philosophy</option>
+            </select>
+          </div>
+
+          <div class="dynamic-suggestions-box">
+            <span class="suggestions-label">💡 Recommended Topics (Click to Apply):</span>
+            <div class="suggestion-chips" id="wiz-suggestions-container"></div>
+          </div>
+
+          <div class="form-group">
+            <label for="wiz-title">Series / Episode Title</label>
+            <input type="text" id="wiz-title" class="input-text" placeholder="e.g. The Quantum Paradox">
+          </div>
+
+          <div class="form-group">
+            <label for="wiz-keyword">Focal Theme / Entity</label>
+            <input type="text" id="wiz-keyword" class="input-text" placeholder="e.g. Sentient AGI Core">
+          </div>
+        </div>
+
+        <!-- Wizard Step 2 -->
+        <div class="wizard-step-pane" id="wizard-step-2">
+          <h3>Step 2: Target Demographics & Narration Tone</h3>
+          <p class="step-desc">Tailor the pacing and speech pattern to resonate with your audience.</p>
+          
+          <div class="form-group">
+            <label>Target Audience Persona</label>
+            <div class="preset-chips" id="wiz-demographics">
+              <button type="button" class="chip active" data-val="General Audience">General Audience</button>
+              <button type="button" class="chip" data-val="Gen Z & TikTok Creators">Gen Z</button>
+              <button type="button" class="chip" data-val="Tech Enthusiasts & Developers">Tech Enthusiasts</button>
+              <button type="button" class="chip" data-val="Dark Lore & Mystery Fans">Dark Lore</button>
+              <button type="button" class="chip" data-val="Finance & Crypto Creators">Finance</button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="wiz-voice-tone">Narrator Delivery Style</label>
+            <select id="wiz-voice-tone" class="input-select">
+              <option value="Cinematic Narrator">Cinematic & Gripping</option>
+              <option value="Spooky Storyteller">Spooky & Suspenseful</option>
+              <option value="High Energy Enthusiast">High Energy & Rapid</option>
+              <option value="Thoughtful Analyst">Thoughtful & Educational</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Wizard Step 3 -->
+        <div class="wizard-step-pane" id="wizard-step-3">
+          <h3>Step 3: Visual Style & Aesthetics</h3>
+          <p class="step-desc">Choose the visual render engine and aesthetic treatment.</p>
+          
+          <div class="style-cards-grid" id="wiz-style-grid">
+            <div class="style-card active" data-style="Cinematic Photorealism">
+              <div class="style-card-icon">🎥</div>
+              <div class="style-card-title">Cinematic Photorealism</div>
+              <div class="style-card-desc">35mm film lens, dramatic lighting & depth of field.</div>
+            </div>
+            <div class="style-card" data-style="Anime / Cyberpunk">
+              <div class="style-card-icon">🌆</div>
+              <div class="style-card-title">Anime / Cyberpunk</div>
+              <div class="style-card-desc">Neon reflections, detailed linework, volumetric fog.</div>
+            </div>
+            <div class="style-card" data-style="Retro 80s VHS">
+              <div class="style-card-icon">📼</div>
+              <div class="style-card-title">Retro 80s VHS</div>
+              <div class="style-card-desc">Analog tape chromatic aberration & synthwave colors.</div>
+            </div>
+            <div class="style-card" data-style="3D Pixar / Unreal 5">
+              <div class="style-card-icon">🎨</div>
+              <div class="style-card-title">3D Unreal 5 Stylized</div>
+              <div class="style-card-desc">Octane render, whimsical character lighting.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Wizard Step 4 -->
+        <div class="wizard-step-pane" id="wizard-step-4">
+          <h3>Step 4: Duration & Narrative Hooks</h3>
+          <p class="step-desc">Configure pacing and hooks to maximize viewer retention.</p>
+          
+          <div class="duration-slider-container">
+            <div class="duration-header">
+              <span>Target Duration: <strong id="wiz-duration-val">60s</strong></span>
+              <span class="word-counter-badge" id="wiz-word-count">~150 words</span>
+            </div>
+            <input type="range" id="wiz-range-duration" class="input-range" min="15" max="300" step="5" value="60">
+          </div>
+
+          <div class="form-group">
+            <label for="wiz-recap">Recap Hook (Optional)</label>
+            <input type="text" id="wiz-recap" class="input-text" placeholder="e.g. Previously on...">
+          </div>
+
+          <div class="form-group">
+            <label for="wiz-cliffhanger">Cliffhanger Ending Hook (Optional)</label>
+            <input type="text" id="wiz-cliffhanger" class="input-text" placeholder="e.g. Find out in episode 2...">
+          </div>
+        </div>
+
+        <!-- Wizard Step 5 -->
+        <div class="wizard-step-pane" id="wizard-step-5">
+          <h3>Step 5: Launch Verification</h3>
+          <p class="step-desc">Review your configured production specifications before dispatching.</p>
+          
+          <div class="summary-specs glass-panel" id="wiz-final-summary">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-ghost" id="wiz-btn-prev" disabled>Back</button>
+        <button class="btn btn-primary" id="wiz-btn-next">Next Step →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
