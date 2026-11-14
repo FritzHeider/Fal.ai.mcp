@@ -2,8 +2,8 @@
   "mcpServers": {
     "fal": {
       "type": "stdio",
-      "command": "/Users/drop/fal.ai.mcp/.venv/bin/python",
-      "args": ["/Users/drop/fal.ai.mcp/fal_mcp.py"]
+      "command": "bash",
+      "args": ["./run_mcp.sh"]
     }
   }
 }

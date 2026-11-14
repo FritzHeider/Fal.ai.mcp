@@ -16,6 +16,9 @@ from mcp.server.fastmcp import FastMCP
 from pydantic import BaseModel, Field, ConfigDict
 
 import fal_api_client
+import db
+import pipeline
+from settings import settings
 from models import (
     ResponseFormat,
     ListApplicationsInput,
@@ -29,7 +32,14 @@ from models import (
     GetUsageStatsInput,
     SubmitBatchJobInput,
     GetJobLogsInput,
+    GenerateVideoProjectInput,
+    ListVideoJobsInput,
+    GetVideoJobInput,
+    RetryVideoJobInput,
 )
+
+# Initialize database schema dynamically
+db.init_db_sync()
 
 
 # ============================================================================
@@ -563,13 +573,150 @@ async def get_job_logs(params: GetJobLogsInput) -> str:
 
 
 # ============================================================================
+# High-Level Video Pipeline Tools
+# ============================================================================
+
+
+@mcp.tool(
+    name="generate_video_project",
+    description="Submit a complete AI video generation project with script synthesis, visual cue timeline generation, and fal.ai rendering",
+    annotations={
+        "title": "Generate AI Video Project",
+        "readOnlyHint": False,
+        "destructiveHint": False,
+        "idempotentHint": False,
+        "openWorldHint": True
+    }
+)
+async def generate_video_project(params: GenerateVideoProjectInput) -> str:
+    """
+    Generate an AI video project using fal.ai models with automated script & visual timeline.
+    
+    Creates a new job in the database and launches the video production pipeline.
+    """
+    try:
+        job_data = {
+            "title": params.title,
+            "niche": params.niche,
+            "focus_keyword": params.focus_keyword,
+            "visual_style": params.visual_style,
+            "target_duration_sec": params.target_duration_sec,
+            "full_script": params.full_script,
+            "recap_intro": params.recap_intro,
+            "custom_cliffhanger": params.custom_cliffhanger,
+            "target_demographic": params.target_demographic,
+            "voice_tone": params.voice_tone,
+            "model_id": params.model_id or settings.DEFAULT_MODEL_VIDEO,
+            "status": "QUEUED"
+        }
+        created = await db.create_job(job_data)
+        job_id = created["id"]
+
+        # Run pipeline
+        final_job = await pipeline.run_video_pipeline(job_id)
+        return _format_response(final_job, params.response_format)
+    except Exception as e:
+        return f"Error generating video project: {str(e)}"
+
+
+@mcp.tool(
+    name="list_video_jobs",
+    description="List all video pipeline projects, filtered by status or search keyword",
+    annotations={
+        "title": "List Video Pipeline Jobs",
+        "readOnlyHint": True,
+        "destructiveHint": False,
+        "idempotentHint": True,
+        "openWorldHint": False
+    }
+)
+async def list_video_jobs(params: ListVideoJobsInput) -> str:
+    """
+    List video projects recorded in the SQLite pipeline database.
+    """
+    try:
+        jobs = await db.list_jobs(status=params.status, search=params.search, limit=params.limit)
+        return _format_response({"jobs": jobs, "count": len(jobs)}, params.response_format)
+    except Exception as e:
+        return f"Error listing video jobs: {str(e)}"
+
+
+@mcp.tool(
+    name="get_video_job",
+    description="Get detailed information for a specific video pipeline project including script, timeline, media URL, and logs",
+    annotations={
+        "title": "Get Video Project Details",
+        "readOnlyHint": True,
+        "destructiveHint": False,
+        "idempotentHint": True,
+        "openWorldHint": False
+    }
+)
+async def get_video_job(params: GetVideoJobInput) -> str:
+    """
+    Get full metadata and execution state for a video project.
+    """
+    try:
+        job = await db.get_job(params.job_id)
+        if not job:
+            return f"Job '{params.job_id}' not found."
+        return _format_response(job, params.response_format)
+    except Exception as e:
+        return f"Error retrieving video job: {str(e)}"
+
+
+@mcp.tool(
+    name="retry_video_job",
+    description="Retry a failed or incomplete video pipeline job",
+    annotations={
+        "title": "Retry Video Pipeline Job",
+        "readOnlyHint": False,
+        "destructiveHint": False,
+        "idempotentHint": False,
+        "openWorldHint": True
+    }
+)
+async def retry_video_job(params: RetryVideoJobInput) -> str:
+    """
+    Restart video generation pipeline for an existing job.
+    """
+    try:
+        job = await db.get_job(params.job_id)
+        if not job:
+            return f"Job '{params.job_id}' not found."
+        final_job = await pipeline.run_video_pipeline(params.job_id)
+        return _format_response(final_job, params.response_format)
+    except Exception as e:
+        return f"Error retrying video job: {str(e)}"
+
+
+# ============================================================================
 # Server Entry Point
 # ============================================================================
 
 
+def main() -> None:
+    """Parse CLI arguments and start the MCP server on the chosen transport."""
+    import argparse
+
+    parser = argparse.ArgumentParser(description="fal.ai MCP server")
+    parser.add_argument(
+        "--transport",
+        choices=["stdio", "streamable_http", "sse"],
+        default="stdio",
+        help="MCP transport to use (default: stdio)",
+    )
+    parser.add_argument("--host", default=settings.HOST, help="Host for HTTP transports")
+    parser.add_argument("--port", type=int, default=settings.PORT, help="Port for HTTP transports")
+    args = parser.parse_args()
+
+    if args.transport == "stdio":
+        mcp.run()
+    else:
+        mcp.settings.host = args.host
+        mcp.settings.port = args.port
+        mcp.run(transport=args.transport.replace("_", "-"))
+
+
 if __name__ == "__main__":
-    # For stdio transport (default)
-    mcp.run()
-    
-    # To use HTTP transport instead, uncomment:
-    # mcp.run(transport="streamable_http", port=8000)
+    main()

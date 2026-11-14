@@ -375,3 +375,123 @@ class UsageStats(BaseModel):
     failed_requests: int
     total_credits_used: float
     average_execution_time_ms: float
+
+
+# ============================================================================
+# Video Pipeline Input Models
+# ============================================================================
+
+
+class GenerateVideoProjectInput(BaseModel):
+    """Input parameters for submitting a complete video generation project."""
+    model_config = ConfigDict(
+        str_strip_whitespace=True,
+        validate_assignment=True,
+        extra='ignore'
+    )
+
+    title: str = Field(
+        default="Untitled Video Project",
+        description="The title of the video or episode",
+        max_length=200
+    )
+    niche: Optional[str] = Field(
+        default="Cinematic Sci-Fi",
+        description="The genre or niche (e.g., 'Sci-Fi Lore', 'Tech Breakdown', 'True Crime', 'Dark Fantasy')"
+    )
+    focus_keyword: Optional[str] = Field(
+        default=None,
+        description="Core topic, focal keyword, or character name",
+        max_length=150
+    )
+    visual_style: str = Field(
+        default="Cinematic Photorealism",
+        description="Visual aesthetic (e.g. 'Cinematic Photorealism', 'Anime / Cyberpunk', 'Retro 80s VHS', '3D Pixar / Unreal 5', 'Dark Noir')"
+    )
+    target_duration_sec: int = Field(
+        default=60,
+        description="Desired target video duration in seconds (15 - 300)",
+        ge=15,
+        le=300
+    )
+    full_script: Optional[str] = Field(
+        default=None,
+        description="Full script or narrative text. If omitted, script is automatically composed."
+    )
+    recap_intro: Optional[str] = Field(
+        default=None,
+        description="Optional intro or recap hook (e.g. 'Previously on...')"
+    )
+    custom_cliffhanger: Optional[str] = Field(
+        default=None,
+        description="Optional cliffhanger ending hook to tease the next episode"
+    )
+    target_demographic: Optional[str] = Field(
+        default="General Audience",
+        description="Audience persona (e.g. 'Gen Z', 'Tech Enthusiasts', 'Kids', 'Finance Bros')"
+    )
+    voice_tone: Optional[str] = Field(
+        default="Cinematic Narrator",
+        description="Voice narration tone"
+    )
+    model_id: Optional[str] = Field(
+        default=None,
+        description="fal.ai model ID to use for generation (defaults to Kling or configured model)"
+    )
+    response_format: ResponseFormat = Field(
+        default=ResponseFormat.MARKDOWN,
+        description="Output format: 'markdown' or 'json'"
+    )
+
+
+class ListVideoJobsInput(BaseModel):
+    """Input parameters for listing video pipeline jobs."""
+    model_config = ConfigDict(str_strip_whitespace=True, extra='ignore')
+
+    status: Optional[str] = Field(
+        default=None,
+        description="Filter jobs by status ('QUEUED', 'IN_PROGRESS', 'COMPLETED', 'FAILED')"
+    )
+    search: Optional[str] = Field(
+        default=None,
+        description="Search term to filter jobs by title, keyword, or prompt"
+    )
+    limit: int = Field(
+        default=20,
+        description="Maximum number of jobs to return",
+        ge=1,
+        le=100
+    )
+    response_format: ResponseFormat = Field(
+        default=ResponseFormat.MARKDOWN,
+        description="Output format: 'markdown' or 'json'"
+    )
+
+
+class GetVideoJobInput(BaseModel):
+    """Input parameters for retrieving a specific video pipeline job."""
+    model_config = ConfigDict(str_strip_whitespace=True, extra='ignore')
+
+    job_id: str = Field(
+        ...,
+        description="The unique identifier of the video job (e.g. 'job_123456789abc')"
+    )
+    response_format: ResponseFormat = Field(
+        default=ResponseFormat.MARKDOWN,
+        description="Output format: 'markdown' or 'json'"
+    )
+
+
+class RetryVideoJobInput(BaseModel):
+    """Input parameters for retrying a failed or incomplete video pipeline job."""
+    model_config = ConfigDict(str_strip_whitespace=True, extra='ignore')
+
+    job_id: str = Field(
+        ...,
+        description="The unique identifier of the video job to retry"
+    )
+    response_format: ResponseFormat = Field(
+        default=ResponseFormat.MARKDOWN,
+        description="Output format: 'markdown' or 'json'"
+    )
+
