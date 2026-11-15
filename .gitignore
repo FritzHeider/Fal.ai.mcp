@@ -18,3 +18,7 @@ build/
 # Tooling
 .ralph/
 .claude/
+
+# Runtime data
+pipeline.db
+episodes/
